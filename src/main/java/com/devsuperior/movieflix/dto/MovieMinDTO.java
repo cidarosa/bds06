@@ -2,22 +2,21 @@ package com.devsuperior.movieflix.dto;
 
 import java.io.Serializable;
 
-public class MovieGenreDTO implements Serializable {
+import com.devsuperior.movieflix.projection.MovieMinProjection;
+
+public class MovieMinDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Long id;
 	private String title;
 	private String subTitle;
 	private Integer year;
 	private String imgUrl;
 	private String synopsis;
 
-	public MovieGenreDTO() {
+	public MovieMinDTO() {
 	}
 
-	public MovieGenreDTO(Long id, String title, String subTitle, Integer year, String imgUrl, String synopsis) {
-		super();
-		this.id = id;
+	public MovieMinDTO(String title, String subTitle, Integer year, String imgUrl, String synopsis) {
 		this.title = title;
 		this.subTitle = subTitle;
 		this.year = year;
@@ -25,12 +24,12 @@ public class MovieGenreDTO implements Serializable {
 		this.synopsis = synopsis;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
+	public MovieMinDTO(MovieMinProjection projection) {
+		title = projection.getTitle();
+		subTitle = projection.getSubTitle();
+		year = projection.getYear();
+		imgUrl = projection.getImgUrl();
+		synopsis = projection.getSynopsis();
 	}
 
 	public String getTitle() {
@@ -71,6 +70,6 @@ public class MovieGenreDTO implements Serializable {
 
 	public void setSynopsis(String synopsis) {
 		this.synopsis = synopsis;
-	}
+	}	
 
 }
