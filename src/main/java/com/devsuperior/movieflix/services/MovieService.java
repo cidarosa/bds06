@@ -8,10 +8,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.devsuperior.movieflix.dto.MovieDTO;
-import com.devsuperior.movieflix.dto.MovieMinDTO;
+import com.devsuperior.movieflix.dto.MovieCardDTO;
+import com.devsuperior.movieflix.dto.MovieDetailsDTO;
+import com.devsuperior.movieflix.entities.Genre;
 import com.devsuperior.movieflix.entities.Movie;
-import com.devsuperior.movieflix.entities.User;
+import com.devsuperior.movieflix.repositories.GenreRepository;
 import com.devsuperior.movieflix.repositories.MovieRepository;
 import com.devsuperior.movieflix.services.exceptions.ResourceNotFoundException;
 
@@ -20,30 +21,37 @@ public class MovieService {
 
 	@Autowired
 	private MovieRepository repository;
-
+	
 	@Autowired
-	private AuthService authService;
+	private GenreRepository genreRepository;
+
+	/*
+	 * @Autowired private AuthService authService;
+	 */
 
 	@Transactional(readOnly = true)
-	public MovieDTO findById(Long id) {
+	public MovieDetailsDTO findById(Long id) {
 		
-		User user = authService.authenticated();
-
-	//	authService.validateSelfOrAdmin(user.getId()); // validando - se não lança exception
-
 		Optional<Movie> obj = repository.findById(id);
 		Movie entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
-		return new MovieDTO(entity);
+		
+		return  new MovieDetailsDTO(entity);
 	}
-	
 	@Transactional(readOnly = true)
-	public Page<MovieMinDTO> find(Pageable pageable){
-		
-		Page<MovieMinDTO> page = repository.findAllPaged( pageable);
-		
-		//Page<Movie> page = repository.find(pageable);
-		return page;
-		
+	public Page<MovieCardDTO> findByGenre(Long genreId, Pageable pageable) {
+		Genre genre = (genreId == 0) ? null : genreRepository.getOne(genreId);
+		Page<Movie> page = repository.find(genre, pageable);
+		return page.map(x -> new MovieCardDTO(x));
 	}
 
+	/*
+	 * @Transactional(readOnly = true) public Page<MovieCardDTO> findByGenre(Long
+	 * genreId, Pageable pageable) { Genre genre = (genreId == 0) ? null :
+	 * genreRepository.getOne(genreId); Page<Movie> page =
+	 * repository.find(genre.getId(), pageable);
+	 * 
+	 * return page.map(x -> new MovieCardDTO(x)); }
+	 */
+
+	
 }
